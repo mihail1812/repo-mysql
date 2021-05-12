@@ -1,0 +1,49 @@
+use less5;
+
+--1.1;
+
+UPDATE users SET created_at = NOW();
+UPDATE users SET updated_at = NOW(); 
+
+--1.2;
+--первый способ
+
+ALTER TABLE users ADD created_at_dt DATETIME;
+ALTER TABLE users ADD updated_at_dt DATETIME;
+UPDATE users
+SET created_at_dt = created_at;
+UPDATE users
+SET updated_at_dt = created_at;
+
+ALTER TABLE users DROP created_at;
+ALTER TABLE users DROP updated_at;
+
+ALTER TABLE users CHANGE created_at_dt created_at DATETIME;
+ALTER TABLE users CHANGE updated_at_dt updated_at DATETIME;
+ 
+--второй способ
+
+ALTER TABLE less5.users MODIFY COLUMN created_at DATETIME NULL;
+ALTER TABLE less5.users MODIFY COLUMN updated_at DATETIME NULL;
+
+SELECT * FROM users;
+
+--1.3
+
+SELECT * FROM storehouses_products ORDER BY IF(value > 0, 0, 1), value;
+
+--2.1
+
+SELECT ROUND(AVG((TO_DAYS(NOW()) - TO_DAYS(birthday_at)) / 365.25), 0) AS AVG_Age FROM users;
+
+--2.2
+
+SELECT
+	DATE_FORMAT(DATE(CONCAT_WS('-', YEAR(NOW()), MONTH(birthday_at), DAY(birthday_at))), '%W') AS day,
+	COUNT(*) AS total
+FROM
+	users
+GROUP BY
+	day
+ORDER BY
+	total DESC;
